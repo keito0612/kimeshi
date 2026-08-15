@@ -14,16 +14,12 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           children: [
             // アプリアイコンと名前
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: colorScheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: Icon(
-                Icons.restaurant_menu,
-                color: colorScheme.primary,
-                size: 64,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Image.asset(
+                'lib/assets/app_icons/kimeshi-icon-180.png',
+                width: 100,
+                height: 100,
               ),
             ),
             const SizedBox(height: 16),
