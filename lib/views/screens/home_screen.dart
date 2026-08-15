@@ -38,212 +38,181 @@ class HomeScreen extends HookConsumerWidget {
     }, [state.selectedGenre]);
 
     return Scaffold(
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // コンパクトヘッダー
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.restaurant_menu,
-                        color: colorScheme.primary,
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Kimeshi',
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
+      appBar: AppBar(title: const Text('ホーム')),
+      body: CustomScrollView(
+        slivers: [
+          // メインコンテンツ
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // 予算カード
+                _buildSectionCard(
+                  context: context,
+                  icon: Icons.payments_outlined,
+                  iconColor: colorScheme.primary,
+                  title: '予算',
+                  child: BudgetSelector(
+                    options: AppConstants.budgetOptions,
+                    selectedValue: state.selectedBudget,
+                    onSelected: viewModel.setBudget,
+                  ),
+                  showError: showBudgetError.value,
+                  errorMessage: '予算を選択してください',
                 ),
-              ),
-            ),
 
-            // メインコンテンツ
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  // 予算カード
-                  _buildSectionCard(
-                    context: context,
-                    icon: Icons.payments_outlined,
-                    iconColor: colorScheme.primary,
-                    title: '予算',
-                    child: BudgetSelector(
-                      options: AppConstants.budgetOptions,
-                      selectedValue: state.selectedBudget,
-                      onSelected: viewModel.setBudget,
-                    ),
-                    showError: showBudgetError.value,
-                    errorMessage: '予算を選択してください',
+                const SizedBox(height: 16),
+
+                // ジャンルカード
+                _buildSectionCard(
+                  context: context,
+                  icon: Icons.ramen_dining,
+                  iconColor: colorScheme.tertiary,
+                  title: 'ジャンル',
+                  child: GenreSelector(
+                    options: AppConstants.genreOptions,
+                    selectedValue: state.selectedGenre,
+                    onSelected: viewModel.setGenre,
                   ),
+                  showError: showGenreError.value,
+                  errorMessage: 'ジャンルを選択してください',
+                ),
 
-                  const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                  // ジャンルカード
-                  _buildSectionCard(
-                    context: context,
-                    icon: Icons.ramen_dining,
-                    iconColor: colorScheme.tertiary,
-                    title: 'ジャンル',
-                    child: GenreSelector(
-                      options: AppConstants.genreOptions,
-                      selectedValue: state.selectedGenre,
-                      onSelected: viewModel.setGenre,
-                    ),
-                    showError: showGenreError.value,
-                    errorMessage: 'ジャンルを選択してください',
+                // 距離カード
+                _buildSectionCard(
+                  context: context,
+                  icon: Icons.place_outlined,
+                  iconColor: colorScheme.tertiary,
+                  title: '距離',
+                  child: RadiusSlider(
+                    value: state.radius,
+                    onChanged: viewModel.setRadius,
                   ),
+                ),
 
-                  const SizedBox(height: 16),
+                const SizedBox(height: 32),
 
-                  // 距離カード
-                  _buildSectionCard(
-                    context: context,
-                    icon: Icons.place_outlined,
-                    iconColor: colorScheme.tertiary,
-                    title: '距離',
-                    child: RadiusSlider(
-                      value: state.radius,
-                      onChanged: viewModel.setRadius,
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // 検索ボタン
-                  Semantics(
-                    button: true,
-                    label: '今日はここ！検索ボタン',
-                    child: Container(
-                      height: 64,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            colorScheme.primary,
-                            colorScheme.tertiary,
-                          ],
+                // 検索ボタン
+                Semantics(
+                  button: true,
+                  label: '今日はここ！検索ボタン',
+                  child: Container(
+                    height: 64,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [colorScheme.primary, colorScheme.tertiary],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colorScheme.primary.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
                         ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
                         borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: colorScheme.primary.withValues(alpha: 0.4),
-                            blurRadius: 12,
-                            offset: const Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(20),
-                          splashColor: colorScheme.onPrimary.withValues(alpha: 0.3),
-                          highlightColor: colorScheme.onPrimary.withValues(alpha: 0.1),
-                          onTap: state.isLoading
-                              ? null
-                              : () async {
-                                  HapticFeedback.mediumImpact();
-                                  bool hasError = false;
+                        splashColor: colorScheme.onPrimary.withValues(
+                          alpha: 0.3,
+                        ),
+                        highlightColor: colorScheme.onPrimary.withValues(
+                          alpha: 0.1,
+                        ),
+                        onTap: state.isLoading
+                            ? null
+                            : () async {
+                                HapticFeedback.mediumImpact();
+                                bool hasError = false;
 
-                                  if (state.selectedBudget == null) {
-                                    showBudgetError.value = true;
-                                    hasError = true;
-                                  }
+                                if (state.selectedBudget == null) {
+                                  showBudgetError.value = true;
+                                  hasError = true;
+                                }
 
-                                  if (state.selectedGenre == null) {
-                                    showGenreError.value = true;
-                                    hasError = true;
-                                  }
+                                if (state.selectedGenre == null) {
+                                  showGenreError.value = true;
+                                  hasError = true;
+                                }
 
-                                  if (hasError) {
-                                    HapticFeedback.heavyImpact();
-                                    return;
-                                  }
+                                if (hasError) {
+                                  HapticFeedback.heavyImpact();
+                                  return;
+                                }
 
-                                  await viewModel.search();
-                                  if (context.mounted) {
-                                    final currentState = ref.read(
-                                      searchViewModelProvider,
+                                await viewModel.search();
+                                if (context.mounted) {
+                                  final currentState = ref.read(
+                                    searchViewModelProvider,
+                                  );
+                                  if (currentState.restaurant != null) {
+                                    HapticFeedback.lightImpact();
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ResultScreen(),
+                                      ),
                                     );
-                                    if (currentState.restaurant != null) {
-                                      HapticFeedback.lightImpact();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const ResultScreen(),
+                                  } else if (currentState.errorMessage !=
+                                      null) {
+                                    HapticFeedback.heavyImpact();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          currentState.errorMessage!,
                                         ),
-                                      );
-                                    } else if (currentState.errorMessage !=
-                                        null) {
-                                      HapticFeedback.heavyImpact();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content:
-                                              Text(currentState.errorMessage!),
-                                          backgroundColor: colorScheme.error,
-                                        ),
-                                      );
-                                    }
+                                        backgroundColor: colorScheme.error,
+                                      ),
+                                    );
                                   }
-                                },
-                          child: Center(
-                            child: state.isLoading
-                                ? SizedBox(
-                                    width: 28,
-                                    height: 28,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 3,
-                                      color: colorScheme.onPrimary,
-                                    ),
-                                  )
-                                : Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.search,
-                                        color: colorScheme.onPrimary,
-                                        size: 28,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '今日はここ！',
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          color: colorScheme.onPrimary,
-                                          letterSpacing: 1,
-                                        ),
-                                      ),
-                                    ],
+                                }
+                              },
+                        child: Center(
+                          child: state.isLoading
+                              ? SizedBox(
+                                  width: 28,
+                                  height: 28,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 3,
+                                    color: colorScheme.onPrimary,
                                   ),
-                          ),
+                                )
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      color: colorScheme.onPrimary,
+                                      size: 28,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '今日はここ！',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: colorScheme.onPrimary,
+                                        letterSpacing: 1,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                         ),
                       ),
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 24),
-                ]),
-              ),
+                const SizedBox(height: 24),
+              ]),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -42,90 +42,53 @@ class ResultScreen extends HookConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        title: const Text('飲食店'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            hasShownEmptyDialog.value = true;
+            viewModel.reset();
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            // コンパクトヘッダー（HomeScreenと統一）
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      hasShownEmptyDialog.value = true;
-                      viewModel.reset();
-                      Navigator.pop(context);
-                    },
-                    tooltip: '戻る',
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.store,
-                      color: colorScheme.primary,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    '飲食店',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // メインコンテンツ
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: state.isLoading
-                          ? Center(
-                              child: CircularProgressIndicator(
-                                color: colorScheme.primary,
-                              ),
-                            )
-                          : restaurant == null
-                              ? _buildEmptyState(context)
-                              : _buildSwipeableCard(
-                                  context,
-                                  ref,
-                                  restaurant,
-                                  state,
-                                  viewModel,
-                                  cardSwiperController,
-                                ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildActionButtons(context, restaurant, cardSwiperController),
-                    const SizedBox(height: 8),
-                    Text(
-                      restaurant != null
-                          ? '残り ${state.remainingCount + 1} 件'
-                          : '残り 0 件',
-                      style: TextStyle(
-                        color: colorScheme.onSurfaceVariant,
-                        fontSize: 14,
+              child: state.isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: colorScheme.primary,
                       ),
+                    )
+                  : restaurant == null
+                  ? _buildEmptyState(context)
+                  : _buildSwipeableCard(
+                      context,
+                      ref,
+                      restaurant,
+                      state,
+                      viewModel,
+                      cardSwiperController,
                     ),
-                    const SizedBox(height: 16),
-                  ],
-                ),
+            ),
+            const SizedBox(height: 16),
+            _buildActionButtons(context, restaurant, cardSwiperController),
+            const SizedBox(height: 8),
+            Text(
+              restaurant != null
+                  ? '残り ${state.remainingCount + 1} 件'
+                  : '残り 0 件',
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
+                fontSize: 14,
               ),
             ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -147,10 +110,7 @@ class ResultScreen extends HookConsumerWidget {
           Text(
             '条件に合うお店は\nありませんでした',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              color: colorScheme.onSurfaceVariant,
-            ),
+            style: TextStyle(fontSize: 18, color: colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -366,10 +326,7 @@ class ResultScreen extends HookConsumerWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  border: Border.all(
-                    color: overlayColor,
-                    width: 4,
-                  ),
+                  border: Border.all(color: overlayColor, width: 4),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -445,7 +402,7 @@ class ResultScreen extends HookConsumerWidget {
                 onTap: () {
                   HapticFeedback.lightImpact();
                   Navigator.pop(context);
-                  _openMap(restaurant.lat, restaurant.lng);
+                  _openMap(restaurant.name, restaurant.lat, restaurant.lng);
                 },
               ),
               _ActionTile(
@@ -454,7 +411,7 @@ class ResultScreen extends HookConsumerWidget {
                 onTap: () {
                   HapticFeedback.lightImpact();
                   Navigator.pop(context);
-                  _shareRestaurant(restaurant);
+                  _showShareOptions(context, restaurant);
                 },
               ),
               const SizedBox(height: 8),
@@ -465,9 +422,10 @@ class ResultScreen extends HookConsumerWidget {
     );
   }
 
-  Future<void> _openMap(double lat, double lng) async {
+  Future<void> _openMap(String restaurantName, double lat, double lng) async {
+    final encodedName = Uri.encodeComponent(restaurantName);
     final uri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+      'https://www.google.com/maps/search/?api=1&query=$encodedName&center=$lat,$lng',
     );
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -481,13 +439,156 @@ class ResultScreen extends HookConsumerWidget {
     }
   }
 
-  Future<void> _shareRestaurant(Restaurant restaurant) async {
-    final text =
-        '${restaurant.name}\n'
+  void _showShareOptions(BuildContext context, Restaurant restaurant) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                'シェア方法を選択',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _ShareOptionTile(
+                assetIcon: 'lib/assets/icons/line_icon.png',
+                label: 'LINEでシェア',
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                  _shareToLine(restaurant);
+                },
+              ),
+              _ShareOptionTile(
+                assetIcon: 'lib/assets/icons/slack_icon.png',
+                label: 'Slackでシェア',
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                  _shareToSlack(restaurant);
+                },
+              ),
+              _ShareOptionTile(
+                icon: Icons.more_horiz,
+                label: 'その他のアプリ',
+                iconColor: colorScheme.primary,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                  _shareToOther(restaurant);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _buildShareText(Restaurant restaurant) {
+    final encodedName = Uri.encodeComponent(restaurant.name);
+    final mapsUrl =
+        'https://www.google.com/maps/search/?api=1&query=$encodedName&center=${restaurant.lat},${restaurant.lng}';
+
+    return '${restaurant.name}\n'
         '${restaurant.address}\n'
         '予算: ${restaurant.budget}\n\n'
-        '${restaurant.hotpepperUrl}';
+        '詳細: ${restaurant.hotpepperUrl}\n'
+        '地図: $mapsUrl';
+  }
+
+  Future<void> _shareToLine(Restaurant restaurant) async {
+    final text = _buildShareText(restaurant);
+    final encodedText = Uri.encodeComponent(text);
+    final uri = Uri.parse('https://line.me/R/share?text=$encodedText');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // LINEがインストールされていない場合は通常のシェアを使用
+      await _shareToOther(restaurant);
+    }
+  }
+
+  Future<void> _shareToSlack(Restaurant restaurant) async {
+    final text = _buildShareText(restaurant);
+    final encodedText = Uri.encodeComponent(text);
+    // Slack URLスキームでテキストを共有
+    final uri = Uri.parse('slack://open?text=$encodedText');
+
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      // Slackがインストールされていない場合は通常のシェアを使用
+      await _shareToOther(restaurant);
+    }
+  }
+
+  Future<void> _shareToOther(Restaurant restaurant) async {
+    final text = _buildShareText(restaurant);
     await SharePlus.instance.share(ShareParams(text: text));
+  }
+}
+
+class _ShareOptionTile extends StatelessWidget {
+  final IconData? icon;
+  final String? assetIcon;
+  final String label;
+  final Color? iconColor;
+  final VoidCallback onTap;
+
+  const _ShareOptionTile({
+    this.icon,
+    this.assetIcon,
+    required this.label,
+    this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = iconColor ?? Theme.of(context).colorScheme.primary;
+
+    Widget iconWidget;
+    if (assetIcon != null) {
+      iconWidget = Image.asset(assetIcon!, width: 24, height: 24);
+    } else {
+      iconWidget = Icon(icon, size: 24, color: color);
+    }
+
+    return ListTile(
+      leading: SizedBox(
+        width: 40,
+        height: 40,
+        child: Center(child: iconWidget),
+      ),
+      title: Text(label),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
+    );
   }
 }
 

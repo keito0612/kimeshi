@@ -24,7 +24,8 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
     final hasChanges = useState(false);
 
     void checkChanges() {
-      hasChanges.value = selectedBudget.value != settings.defaultBudget ||
+      hasChanges.value =
+          selectedBudget.value != settings.defaultBudget ||
           selectedGenre.value != settings.defaultGenre ||
           selectedRadius.value != settings.defaultRadius ||
           selectedSearchLimit.value != settings.defaultSearchLimit;
@@ -53,191 +54,140 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(title: const Text('デフォルト検索条件')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ヘッダー
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 20, 8),
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.pop(context);
-                    },
-                    tooltip: '戻る',
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      Icons.tune,
-                      color: colorScheme.primary,
-                      size: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'デフォルト検索条件',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                ],
+            Text(
+              '検索画面を開いた時の初期値を設定できます。',
+              style: TextStyle(
+                fontSize: 14,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 予算設定
+            _buildSectionCard(
+              context: context,
+              icon: Icons.payments_outlined,
+              iconColor: colorScheme.primary,
+              title: 'デフォルト予算',
+              child: _buildBudgetSelector(
+                context: context,
+                selectedValue: selectedBudget.value,
+                onSelected: (value) {
+                  HapticFeedback.selectionClick();
+                  selectedBudget.value = value;
+                  checkChanges();
+                },
               ),
             ),
 
-            // コンテンツ
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '検索画面を開いた時の初期値を設定できます。',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
+            const SizedBox(height: 16),
 
-                    // 予算設定
-                    _buildSectionCard(
-                      context: context,
-                      icon: Icons.payments_outlined,
-                      iconColor: colorScheme.primary,
-                      title: 'デフォルト予算',
-                      child: _buildBudgetSelector(
-                        context: context,
-                        selectedValue: selectedBudget.value,
-                        onSelected: (value) {
-                          HapticFeedback.selectionClick();
-                          selectedBudget.value = value;
-                          checkChanges();
-                        },
-                      ),
-                    ),
+            // ジャンル設定
+            _buildSectionCard(
+              context: context,
+              icon: Icons.ramen_dining,
+              iconColor: colorScheme.tertiary,
+              title: 'デフォルトジャンル',
+              child: _buildGenreSelector(
+                context: context,
+                selectedValue: selectedGenre.value,
+                onSelected: (value) {
+                  HapticFeedback.selectionClick();
+                  selectedGenre.value = value;
+                  checkChanges();
+                },
+              ),
+            ),
 
-                    const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                    // ジャンル設定
-                    _buildSectionCard(
-                      context: context,
-                      icon: Icons.ramen_dining,
-                      iconColor: colorScheme.tertiary,
-                      title: 'デフォルトジャンル',
-                      child: _buildGenreSelector(
-                        context: context,
-                        selectedValue: selectedGenre.value,
-                        onSelected: (value) {
-                          HapticFeedback.selectionClick();
-                          selectedGenre.value = value;
-                          checkChanges();
-                        },
-                      ),
-                    ),
+            // 距離設定
+            _buildSectionCard(
+              context: context,
+              icon: Icons.place_outlined,
+              iconColor: colorScheme.tertiary,
+              title: 'デフォルト距離',
+              child: _buildRadiusSlider(
+                context: context,
+                value: selectedRadius.value,
+                onChanged: (value) {
+                  HapticFeedback.selectionClick();
+                  selectedRadius.value = value;
+                  checkChanges();
+                },
+              ),
+            ),
 
-                    const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-                    // 距離設定
-                    _buildSectionCard(
-                      context: context,
-                      icon: Icons.place_outlined,
-                      iconColor: colorScheme.tertiary,
-                      title: 'デフォルト距離',
-                      child: _buildRadiusSlider(
-                        context: context,
-                        value: selectedRadius.value,
-                        onChanged: (value) {
-                          HapticFeedback.selectionClick();
-                          selectedRadius.value = value;
-                          checkChanges();
-                        },
-                      ),
-                    ),
+            // 検索件数設定
+            _buildSectionCard(
+              context: context,
+              icon: Icons.format_list_numbered,
+              iconColor: colorScheme.secondary,
+              title: '検索する店の数',
+              child: _buildSearchLimitSlider(
+                context: context,
+                value: selectedSearchLimit.value,
+                onChanged: (value) {
+                  HapticFeedback.selectionClick();
+                  selectedSearchLimit.value = value;
+                  checkChanges();
+                },
+              ),
+            ),
 
-                    const SizedBox(height: 16),
+            const SizedBox(height: 32),
 
-                    // 検索件数設定
-                    _buildSectionCard(
-                      context: context,
-                      icon: Icons.format_list_numbered,
-                      iconColor: colorScheme.secondary,
-                      title: '検索する店の数',
-                      child: _buildSearchLimitSlider(
-                        context: context,
-                        value: selectedSearchLimit.value,
-                        onChanged: (value) {
-                          HapticFeedback.selectionClick();
-                          selectedSearchLimit.value = value;
-                          checkChanges();
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // 保存ボタン
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: hasChanges.value ? saveSettings : null,
-                        icon: const Icon(Icons.save),
-                        label: const Text(
-                          '保存する',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // リセットボタン
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton.icon(
-                        onPressed: () async {
-                          HapticFeedback.lightImpact();
-                          await settings.clearDefaults();
-                          selectedBudget.value = null;
-                          selectedGenre.value = null;
-                          selectedRadius.value = AppConstants.defaultRadius;
-                          selectedSearchLimit.value = AppConstants.defaultSearchLimit;
-                          ref
-                              .read(searchViewModelProvider.notifier)
-                              .reloadDefaults();
-                          hasChanges.value = false;
-
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('デフォルト設定をリセットしました'),
-                                backgroundColor: colorScheme.primary,
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('デフォルトに戻す'),
-                      ),
-                    ),
-                  ],
+            // 保存ボタン
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: hasChanges.value ? saveSettings : null,
+                icon: const Icon(Icons.save),
+                label: const Text(
+                  '保存する',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // リセットボタン
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  HapticFeedback.lightImpact();
+                  await settings.clearDefaults();
+                  selectedBudget.value = null;
+                  selectedGenre.value = null;
+                  selectedRadius.value = AppConstants.defaultRadius;
+                  selectedSearchLimit.value = AppConstants.defaultSearchLimit;
+                  ref.read(searchViewModelProvider.notifier).reloadDefaults();
+                  hasChanges.value = false;
+
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('デフォルト設定をリセットしました'),
+                        backgroundColor: colorScheme.primary,
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.refresh),
+                label: const Text('デフォルトに戻す'),
               ),
             ),
           ],
@@ -529,7 +479,9 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
             value: value.toDouble(),
             min: AppConstants.minSearchLimit.toDouble(),
             max: AppConstants.maxSearchLimit.toDouble(),
-            divisions: (AppConstants.maxSearchLimit - AppConstants.minSearchLimit) ~/ 5,
+            divisions:
+                (AppConstants.maxSearchLimit - AppConstants.minSearchLimit) ~/
+                5,
             onChanged: (newValue) => onChanged(newValue.toInt()),
           ),
         ),
