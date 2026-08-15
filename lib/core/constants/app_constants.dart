@@ -14,6 +14,11 @@ class AppConstants {
   static const int minRadius = 100;
   static const int maxRadius = 3000;
 
+  // 検索上限数設定
+  static const int defaultSearchLimit = 20;
+  static const int minSearchLimit = 5;
+  static const int maxSearchLimit = 50;
+
   // 予算オプション
   static const List<BudgetOption> budgetOptions = [
     BudgetOption(label: '~1000円', value: '1000'),

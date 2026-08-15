@@ -18,6 +18,7 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
     final selectedBudget = useState<String?>(settings.defaultBudget);
     final selectedGenre = useState<String?>(settings.defaultGenre);
     final selectedRadius = useState<int>(settings.defaultRadius);
+    final selectedSearchLimit = useState<int>(settings.defaultSearchLimit);
 
     // 変更があったかどうか
     final hasChanges = useState(false);
@@ -25,7 +26,8 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
     void checkChanges() {
       hasChanges.value = selectedBudget.value != settings.defaultBudget ||
           selectedGenre.value != settings.defaultGenre ||
-          selectedRadius.value != settings.defaultRadius;
+          selectedRadius.value != settings.defaultRadius ||
+          selectedSearchLimit.value != settings.defaultSearchLimit;
     }
 
     Future<void> saveSettings() async {
@@ -33,6 +35,7 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
       await settings.setDefaultBudget(selectedBudget.value);
       await settings.setDefaultGenre(selectedGenre.value);
       await settings.setDefaultRadius(selectedRadius.value);
+      await settings.setDefaultSearchLimit(selectedSearchLimit.value);
 
       // SearchViewModelの状態を更新
       ref.read(searchViewModelProvider.notifier).reloadDefaults();
@@ -162,6 +165,25 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
                       ),
                     ),
 
+                    const SizedBox(height: 16),
+
+                    // 検索件数設定
+                    _buildSectionCard(
+                      context: context,
+                      icon: Icons.format_list_numbered,
+                      iconColor: colorScheme.secondary,
+                      title: '検索する店の数',
+                      child: _buildSearchLimitSlider(
+                        context: context,
+                        value: selectedSearchLimit.value,
+                        onChanged: (value) {
+                          HapticFeedback.selectionClick();
+                          selectedSearchLimit.value = value;
+                          checkChanges();
+                        },
+                      ),
+                    ),
+
                     const SizedBox(height: 32),
 
                     // 保存ボタン
@@ -194,6 +216,7 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
                           selectedBudget.value = null;
                           selectedGenre.value = null;
                           selectedRadius.value = AppConstants.defaultRadius;
+                          selectedSearchLimit.value = AppConstants.defaultSearchLimit;
                           ref
                               .read(searchViewModelProvider.notifier)
                               .reloadDefaults();
@@ -454,5 +477,87 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
       return '${(meters / 1000).toStringAsFixed(1)}km';
     }
     return '${meters}m';
+  }
+
+  Widget _buildSearchLimitSlider({
+    required BuildContext context,
+    required int value,
+    required ValueChanged<int> onChanged,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final accentColor = colorScheme.secondary;
+
+    return Column(
+      children: [
+        // 現在値の表示
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: accentColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.store, color: accentColor, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                '$value件',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: accentColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // スライダー
+        SliderTheme(
+          data: SliderThemeData(
+            activeTrackColor: accentColor,
+            inactiveTrackColor: accentColor.withValues(alpha: 0.2),
+            thumbColor: accentColor,
+            overlayColor: accentColor.withValues(alpha: 0.2),
+            trackHeight: 6,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
+          ),
+          child: Slider(
+            value: value.toDouble(),
+            min: AppConstants.minSearchLimit.toDouble(),
+            max: AppConstants.maxSearchLimit.toDouble(),
+            divisions: (AppConstants.maxSearchLimit - AppConstants.minSearchLimit) ~/ 5,
+            onChanged: (newValue) => onChanged(newValue.toInt()),
+          ),
+        ),
+
+        // 範囲表示
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${AppConstants.minSearchLimit}件',
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                ),
+              ),
+              Text(
+                '${AppConstants.maxSearchLimit}件',
+                style: TextStyle(
+                  color: colorScheme.onSurfaceVariant,
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

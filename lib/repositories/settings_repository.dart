@@ -6,6 +6,7 @@ class SettingsRepository {
   static const _keyDefaultBudget = 'default_budget';
   static const _keyDefaultGenre = 'default_genre';
   static const _keyDefaultRadius = 'default_radius';
+  static const _keyDefaultSearchLimit = 'default_search_limit';
 
   final SharedPreferences _prefs;
 
@@ -38,10 +39,18 @@ class SettingsRepository {
     await _prefs.setInt(_keyDefaultRadius, value);
   }
 
+  // デフォルト検索上限数
+  int get defaultSearchLimit =>
+      _prefs.getInt(_keyDefaultSearchLimit) ?? AppConstants.defaultSearchLimit;
+  Future<void> setDefaultSearchLimit(int value) async {
+    await _prefs.setInt(_keyDefaultSearchLimit, value);
+  }
+
   // すべてのデフォルト設定をクリア
   Future<void> clearDefaults() async {
     await _prefs.remove(_keyDefaultBudget);
     await _prefs.remove(_keyDefaultGenre);
     await _prefs.remove(_keyDefaultRadius);
+    await _prefs.remove(_keyDefaultSearchLimit);
   }
 }

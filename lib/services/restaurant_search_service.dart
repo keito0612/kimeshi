@@ -16,6 +16,7 @@ class RestaurantSearchService implements IRestaurantSearchService {
     String? genre,
     int radius = 1000,
     List<String> excludeIds = const [],
+    int limit = 20,
   }) async {
     // 1. 現在地を取得
     final location = await _locationRepository.getCurrentLocation();
@@ -27,6 +28,7 @@ class RestaurantSearchService implements IRestaurantSearchService {
       genre: genre,
       radius: radius,
       excludeIds: excludeIds,
+      limit: limit,
     );
 
     // 3. 店舗を検索

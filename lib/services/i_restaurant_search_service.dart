@@ -6,5 +6,6 @@ abstract class IRestaurantSearchService {
     String? genre,
     int radius,
     List<String> excludeIds,
+    int limit,
   });
 }

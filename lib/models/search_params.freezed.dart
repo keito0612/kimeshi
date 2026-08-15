@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SearchParams {
 
- double get lat; double get lng; String? get budget; String? get genre; int get radius; List<String> get excludeIds;
+ double get lat; double get lng; String? get budget; String? get genre; int get radius; List<String> get excludeIds; int get limit;
 /// Create a copy of SearchParams
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SearchParamsCopyWith<SearchParams> get copyWith => _$SearchParamsCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchParams&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.budget, budget) || other.budget == budget)&&(identical(other.genre, genre) || other.genre == genre)&&(identical(other.radius, radius) || other.radius == radius)&&const DeepCollectionEquality().equals(other.excludeIds, excludeIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SearchParams&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.budget, budget) || other.budget == budget)&&(identical(other.genre, genre) || other.genre == genre)&&(identical(other.radius, radius) || other.radius == radius)&&const DeepCollectionEquality().equals(other.excludeIds, excludeIds)&&(identical(other.limit, limit) || other.limit == limit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,lat,lng,budget,genre,radius,const DeepCollectionEquality().hash(excludeIds));
+int get hashCode => Object.hash(runtimeType,lat,lng,budget,genre,radius,const DeepCollectionEquality().hash(excludeIds),limit);
 
 @override
 String toString() {
-  return 'SearchParams(lat: $lat, lng: $lng, budget: $budget, genre: $genre, radius: $radius, excludeIds: $excludeIds)';
+  return 'SearchParams(lat: $lat, lng: $lng, budget: $budget, genre: $genre, radius: $radius, excludeIds: $excludeIds, limit: $limit)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SearchParamsCopyWith<$Res>  {
   factory $SearchParamsCopyWith(SearchParams value, $Res Function(SearchParams) _then) = _$SearchParamsCopyWithImpl;
 @useResult
 $Res call({
- double lat, double lng, String? budget, String? genre, int radius, List<String> excludeIds
+ double lat, double lng, String? budget, String? genre, int radius, List<String> excludeIds, int limit
 });
 
 
@@ -65,7 +65,7 @@ class _$SearchParamsCopyWithImpl<$Res>
 
 /// Create a copy of SearchParams
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? lat = null,Object? lng = null,Object? budget = freezed,Object? genre = freezed,Object? radius = null,Object? excludeIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? lat = null,Object? lng = null,Object? budget = freezed,Object? genre = freezed,Object? radius = null,Object? excludeIds = null,Object? limit = null,}) {
   return _then(_self.copyWith(
 lat: null == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
 as double,lng: null == lng ? _self.lng : lng // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as double,budget: freezed == budget ? _self.budget : budget // ignore: cast_null
 as String?,genre: freezed == genre ? _self.genre : genre // ignore: cast_nullable_to_non_nullable
 as String?,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
 as int,excludeIds: null == excludeIds ? _self.excludeIds : excludeIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds,  int limit)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SearchParams() when $default != null:
-return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds);case _:
+return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds,_that.limit);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds,  int limit)  $default,) {final _that = this;
 switch (_that) {
 case _SearchParams():
-return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds);case _:
+return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds,_that.limit);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double lat,  double lng,  String? budget,  String? genre,  int radius,  List<String> excludeIds,  int limit)?  $default,) {final _that = this;
 switch (_that) {
 case _SearchParams() when $default != null:
-return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds);case _:
+return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.excludeIds,_that.limit);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.lat,_that.lng,_that.budget,_that.genre,_that.radius,_that.
 @JsonSerializable()
 
 class _SearchParams implements SearchParams {
-  const _SearchParams({required this.lat, required this.lng, this.budget, this.genre, this.radius = 1000, final  List<String> excludeIds = const []}): _excludeIds = excludeIds;
+  const _SearchParams({required this.lat, required this.lng, this.budget, this.genre, this.radius = 1000, final  List<String> excludeIds = const [], this.limit = 20}): _excludeIds = excludeIds;
   factory _SearchParams.fromJson(Map<String, dynamic> json) => _$SearchParamsFromJson(json);
 
 @override final  double lat;
@@ -229,6 +230,7 @@ class _SearchParams implements SearchParams {
   return EqualUnmodifiableListView(_excludeIds);
 }
 
+@override@JsonKey() final  int limit;
 
 /// Create a copy of SearchParams
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchParams&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.budget, budget) || other.budget == budget)&&(identical(other.genre, genre) || other.genre == genre)&&(identical(other.radius, radius) || other.radius == radius)&&const DeepCollectionEquality().equals(other._excludeIds, _excludeIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SearchParams&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lng, lng) || other.lng == lng)&&(identical(other.budget, budget) || other.budget == budget)&&(identical(other.genre, genre) || other.genre == genre)&&(identical(other.radius, radius) || other.radius == radius)&&const DeepCollectionEquality().equals(other._excludeIds, _excludeIds)&&(identical(other.limit, limit) || other.limit == limit));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,lat,lng,budget,genre,radius,const DeepCollectionEquality().hash(_excludeIds));
+int get hashCode => Object.hash(runtimeType,lat,lng,budget,genre,radius,const DeepCollectionEquality().hash(_excludeIds),limit);
 
 @override
 String toString() {
-  return 'SearchParams(lat: $lat, lng: $lng, budget: $budget, genre: $genre, radius: $radius, excludeIds: $excludeIds)';
+  return 'SearchParams(lat: $lat, lng: $lng, budget: $budget, genre: $genre, radius: $radius, excludeIds: $excludeIds, limit: $limit)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$SearchParamsCopyWith<$Res> implements $SearchParamsCopyWi
   factory _$SearchParamsCopyWith(_SearchParams value, $Res Function(_SearchParams) _then) = __$SearchParamsCopyWithImpl;
 @override @useResult
 $Res call({
- double lat, double lng, String? budget, String? genre, int radius, List<String> excludeIds
+ double lat, double lng, String? budget, String? genre, int radius, List<String> excludeIds, int limit
 });
 
 
@@ -280,7 +282,7 @@ class __$SearchParamsCopyWithImpl<$Res>
 
 /// Create a copy of SearchParams
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? lat = null,Object? lng = null,Object? budget = freezed,Object? genre = freezed,Object? radius = null,Object? excludeIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? lat = null,Object? lng = null,Object? budget = freezed,Object? genre = freezed,Object? radius = null,Object? excludeIds = null,Object? limit = null,}) {
   return _then(_SearchParams(
 lat: null == lat ? _self.lat : lat // ignore: cast_nullable_to_non_nullable
 as double,lng: null == lng ? _self.lng : lng // ignore: cast_nullable_to_non_nullable
@@ -288,7 +290,8 @@ as double,budget: freezed == budget ? _self.budget : budget // ignore: cast_null
 as String?,genre: freezed == genre ? _self.genre : genre // ignore: cast_nullable_to_non_nullable
 as String?,radius: null == radius ? _self.radius : radius // ignore: cast_nullable_to_non_nullable
 as int,excludeIds: null == excludeIds ? _self._excludeIds : excludeIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,limit: null == limit ? _self.limit : limit // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

@@ -13,6 +13,7 @@ class SearchState {
   final String? selectedBudget;
   final String? selectedGenre;
   final int radius;
+  final int limit;
 
   const SearchState({
     this.isLoading = false,
@@ -23,6 +24,7 @@ class SearchState {
     this.selectedBudget,
     this.selectedGenre,
     this.radius = 1000,
+    this.limit = 20,
   });
 
   SearchState copyWith({
@@ -34,6 +36,7 @@ class SearchState {
     String? selectedBudget,
     String? selectedGenre,
     int? radius,
+    int? limit,
     bool clearRestaurant = false,
     bool clearError = false,
     bool clearBudget = false,
@@ -49,6 +52,7 @@ class SearchState {
           clearBudget ? null : (selectedBudget ?? this.selectedBudget),
       selectedGenre: clearGenre ? null : (selectedGenre ?? this.selectedGenre),
       radius: radius ?? this.radius,
+      limit: limit ?? this.limit,
     );
   }
 }
@@ -63,6 +67,7 @@ class SearchViewModel extends StateNotifier<SearchState> {
           selectedBudget: _settings.defaultBudget,
           selectedGenre: _settings.defaultGenre,
           radius: _settings.defaultRadius,
+          limit: _settings.defaultSearchLimit,
         ));
 
   void setBudget(String? budget) {
@@ -87,6 +92,7 @@ class SearchViewModel extends StateNotifier<SearchState> {
         genre: state.selectedGenre,
         radius: state.radius,
         excludeIds: state.excludeIds,
+        limit: state.limit,
       );
 
       state = state.copyWith(
@@ -117,6 +123,7 @@ class SearchViewModel extends StateNotifier<SearchState> {
         genre: state.selectedGenre,
         radius: state.radius,
         excludeIds: newExcludeIds,
+        limit: state.limit,
       );
 
       state = state.copyWith(
@@ -135,6 +142,7 @@ class SearchViewModel extends StateNotifier<SearchState> {
       selectedBudget: _settings.defaultBudget,
       selectedGenre: _settings.defaultGenre,
       radius: _settings.defaultRadius,
+      limit: _settings.defaultSearchLimit,
     );
   }
 
@@ -144,6 +152,7 @@ class SearchViewModel extends StateNotifier<SearchState> {
       selectedBudget: _settings.defaultBudget,
       selectedGenre: _settings.defaultGenre,
       radius: _settings.defaultRadius,
+      limit: _settings.defaultSearchLimit,
       clearBudget: _settings.defaultBudget == null,
       clearGenre: _settings.defaultGenre == null,
     );

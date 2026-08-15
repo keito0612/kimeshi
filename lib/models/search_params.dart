@@ -12,6 +12,7 @@ abstract class SearchParams with _$SearchParams {
     String? genre,
     @Default(1000) int radius,
     @Default([]) List<String> excludeIds,
+    @Default(20) int limit, // 検索する店の上限数
   }) = _SearchParams;
 
   factory SearchParams.fromJson(Map<String, dynamic> json) =>

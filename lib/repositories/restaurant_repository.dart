@@ -28,6 +28,7 @@ class RestaurantRepository implements IRestaurantRepository {
           'radius': params.radius,
           if (params.excludeIds.isNotEmpty)
             'exclude': params.excludeIds.join(','),
+          'limit': params.limit,
         },
       );
 

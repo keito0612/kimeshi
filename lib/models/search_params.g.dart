@@ -18,6 +18,7 @@ _SearchParams _$SearchParamsFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      limit: (json['limit'] as num?)?.toInt() ?? 20,
     );
 
 Map<String, dynamic> _$SearchParamsToJson(_SearchParams instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$SearchParamsToJson(_SearchParams instance) =>
       'genre': instance.genre,
       'radius': instance.radius,
       'excludeIds': instance.excludeIds,
+      'limit': instance.limit,
     };
