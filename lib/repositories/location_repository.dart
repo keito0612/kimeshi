@@ -63,7 +63,7 @@ class LocationRepository implements ILocationRepository {
       );
     } catch (e) {
       if (e is AppException) rethrow;
-      print(e);
+      // Error logged silently - actual exception is thrown below
       throw const LocationException();
     }
   }

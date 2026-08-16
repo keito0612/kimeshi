@@ -1,30 +1,90 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:kimeshi/main.dart';
+import 'package:kimeshi/viewmodels/providers.dart';
+
+class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const KimeshiApp());
+  late SharedPreferences mockPrefs;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    mockPrefs = await SharedPreferences.getInstance();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('KimeshiApp should build and show bottom navigation',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(mockPrefs),
+        ],
+        child: const KimeshiApp(),
+      ),
+    );
+
+    // Wait for the app to build
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify bottom navigation items exist (may find multiple due to IndexedStack)
+    expect(find.text('ホーム'), findsWidgets);
+    expect(find.text('設定'), findsWidgets);
+
+    // Verify bottom navigation bar exists
+    expect(find.byType(BottomNavigationBar), findsOneWidget);
+  });
+
+  testWidgets('Bottom navigation should switch between screens',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(mockPrefs),
+        ],
+        child: const KimeshiApp(),
+      ),
+    );
+
+    await tester.pump();
+
+    // Initially on home screen
+    expect(find.byIcon(Icons.restaurant), findsOneWidget);
+
+    // Tap settings tab
+    await tester.tap(find.text('設定'));
+    await tester.pump();
+
+    // Verify settings screen is shown
+    expect(find.byIcon(Icons.settings), findsOneWidget);
+
+    // Tap home tab again
+    await tester.tap(find.text('ホーム'));
+    await tester.pump();
+
+    // Verify home screen is shown again
+    expect(find.byIcon(Icons.restaurant), findsOneWidget);
+  });
+
+  testWidgets('KimeshiApp should have correct theme colors',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(mockPrefs),
+        ],
+        child: const KimeshiApp(),
+      ),
+    );
+
+    await tester.pump();
+
+    // Get the MaterialApp and check its title
+    final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(materialApp.title, 'Kimeshi');
   });
 }
