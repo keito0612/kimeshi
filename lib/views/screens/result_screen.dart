@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/utils/responsive.dart';
 import '../../models/restaurant.dart';
 import '../../viewmodels/search_viewmodel.dart';
 import '../widgets/restaurant_card.dart';
@@ -40,6 +41,7 @@ class ResultScreen extends HookConsumerWidget {
     }, [restaurant, state.isLoading]);
 
     final colorScheme = Theme.of(context).colorScheme;
+    final responsive = context.responsive;
 
     return Scaffold(
       appBar: AppBar(
@@ -54,9 +56,10 @@ class ResultScreen extends HookConsumerWidget {
           },
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: responsive.horizontalPadding),
+          child: Column(
           children: [
             Expanded(
               child: state.isLoading
@@ -92,6 +95,7 @@ class ResultScreen extends HookConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 
@@ -228,13 +232,15 @@ class ResultScreen extends HookConsumerWidget {
   ) {
     final isEnabled = restaurant != null;
     final colorScheme = Theme.of(context).colorScheme;
+    final responsive = context.responsive;
+    final buttonHeight = responsive.buttonHeight;
 
     return Row(
       children: [
         // 左スワイプボタン
         Expanded(
           child: SizedBox(
-            height: 56,
+            height: buttonHeight,
             child: Semantics(
               button: true,
               label: 'これじゃない、次のお店を表示',
@@ -254,8 +260,8 @@ class ResultScreen extends HookConsumerWidget {
         const SizedBox(width: 8),
         // 詳細ボタン
         SizedBox(
-          height: 56,
-          width: 56,
+          height: buttonHeight,
+          width: buttonHeight,
           child: IconButton.outlined(
             onPressed: isEnabled
                 ? () {
@@ -271,7 +277,7 @@ class ResultScreen extends HookConsumerWidget {
         // 右スワイプボタン
         Expanded(
           child: SizedBox(
-            height: 56,
+            height: buttonHeight,
             child: Semantics(
               button: true,
               label: 'ここに決めた、このお店を選択',

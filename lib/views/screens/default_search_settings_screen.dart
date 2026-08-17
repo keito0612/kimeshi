@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/responsive.dart';
 import '../../viewmodels/providers.dart';
 import '../../viewmodels/search_viewmodel.dart';
 
@@ -53,10 +54,13 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
       }
     }
 
+    final responsive = context.responsive;
+
     return Scaffold(
       appBar: AppBar(title: const Text('デフォルト検索条件')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(responsive.horizontalPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -148,7 +152,7 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
             // 保存ボタン
             SizedBox(
               width: double.infinity,
-              height: 56,
+              height: responsive.buttonHeight,
               child: ElevatedButton.icon(
                 onPressed: hasChanges.value ? saveSettings : null,
                 icon: const Icon(Icons.save),
@@ -193,6 +197,7 @@ class DefaultSearchSettingsScreen extends HookConsumerWidget {
           ],
         ),
       ),
+    ),
     );
   }
 

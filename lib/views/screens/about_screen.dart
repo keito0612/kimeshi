@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/utils/responsive.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -6,11 +7,13 @@ class AboutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final responsive = context.responsive;
 
     return Scaffold(
       appBar: AppBar(title: const Text('アプリについて')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(responsive.horizontalPadding),
         child: Column(
           children: [
             // アプリアイコンと名前
@@ -118,6 +121,7 @@ class AboutScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 

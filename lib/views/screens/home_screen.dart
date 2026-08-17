@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/responsive.dart';
 import '../../viewmodels/search_viewmodel.dart';
 import '../widgets/budget_selector.dart';
 import '../widgets/genre_selector.dart';
@@ -17,6 +18,7 @@ class HomeScreen extends HookConsumerWidget {
     final state = ref.watch(searchViewModelProvider);
     final viewModel = ref.read(searchViewModelProvider.notifier);
     final colorScheme = Theme.of(context).colorScheme;
+    final responsive = context.responsive;
 
     // バリデーションエラーの状態
     final showBudgetError = useState(false);
@@ -39,180 +41,187 @@ class HomeScreen extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('ホーム')),
-      body: CustomScrollView(
-        slivers: [
-          // メインコンテンツ
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // 予算カード
-                _buildSectionCard(
-                  context: context,
-                  icon: Icons.payments_outlined,
-                  iconColor: colorScheme.primary,
-                  title: '予算',
-                  child: BudgetSelector(
-                    options: AppConstants.budgetOptions,
-                    selectedValue: state.selectedBudget,
-                    onSelected: viewModel.setBudget,
-                  ),
-                  showError: showBudgetError.value,
-                  errorMessage: '予算を選択してください',
-                ),
-
-                const SizedBox(height: 16),
-
-                // ジャンルカード
-                _buildSectionCard(
-                  context: context,
-                  icon: Icons.ramen_dining,
-                  iconColor: colorScheme.tertiary,
-                  title: 'ジャンル',
-                  child: GenreSelector(
-                    options: AppConstants.genreOptions,
-                    selectedValue: state.selectedGenre,
-                    onSelected: viewModel.setGenre,
-                  ),
-                  showError: showGenreError.value,
-                  errorMessage: 'ジャンルを選択してください',
-                ),
-
-                const SizedBox(height: 16),
-
-                // 距離カード
-                _buildSectionCard(
-                  context: context,
-                  icon: Icons.place_outlined,
-                  iconColor: colorScheme.tertiary,
-                  title: '距離',
-                  child: RadiusSlider(
-                    value: state.radius,
-                    onChanged: viewModel.setRadius,
-                  ),
-                ),
-
-                const SizedBox(height: 32),
-
-                // 検索ボタン
-                Semantics(
-                  button: true,
-                  label: '今日はここ！検索ボタン',
-                  child: Container(
-                    height: 64,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [colorScheme.primary, colorScheme.tertiary],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.primary.withValues(alpha: 0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // メインコンテンツ
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(
+                responsive.horizontalPadding,
+                12,
+                responsive.horizontalPadding,
+                20,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  // 予算カード
+                  _buildSectionCard(
+                    context: context,
+                    icon: Icons.payments_outlined,
+                    iconColor: colorScheme.primary,
+                    title: '予算',
+                    child: BudgetSelector(
+                      options: AppConstants.budgetOptions,
+                      selectedValue: state.selectedBudget,
+                      onSelected: viewModel.setBudget,
                     ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
+                    showError: showBudgetError.value,
+                    errorMessage: '予算を選択してください',
+                  ),
+
+                  SizedBox(height: responsive.isSmallScreen ? 12 : 16),
+
+                  // ジャンルカード
+                  _buildSectionCard(
+                    context: context,
+                    icon: Icons.ramen_dining,
+                    iconColor: colorScheme.tertiary,
+                    title: 'ジャンル',
+                    child: GenreSelector(
+                      options: AppConstants.genreOptions,
+                      selectedValue: state.selectedGenre,
+                      onSelected: viewModel.setGenre,
+                    ),
+                    showError: showGenreError.value,
+                    errorMessage: 'ジャンルを選択してください',
+                  ),
+
+                  SizedBox(height: responsive.isSmallScreen ? 12 : 16),
+
+                  // 距離カード
+                  _buildSectionCard(
+                    context: context,
+                    icon: Icons.place_outlined,
+                    iconColor: colorScheme.tertiary,
+                    title: '距離',
+                    child: RadiusSlider(
+                      value: state.radius,
+                      onChanged: viewModel.setRadius,
+                    ),
+                  ),
+
+                  SizedBox(height: responsive.isSmallScreen ? 24 : 32),
+
+                  // 検索ボタン
+                  Semantics(
+                    button: true,
+                    label: '今日はここ！検索ボタン',
+                    child: Container(
+                      height: responsive.buttonHeight,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [colorScheme.primary, colorScheme.tertiary],
+                        ),
                         borderRadius: BorderRadius.circular(20),
-                        splashColor: colorScheme.onPrimary.withValues(
-                          alpha: 0.3,
-                        ),
-                        highlightColor: colorScheme.onPrimary.withValues(
-                          alpha: 0.1,
-                        ),
-                        onTap: state.isLoading
-                            ? null
-                            : () async {
-                                HapticFeedback.mediumImpact();
-                                bool hasError = false;
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary.withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          splashColor: colorScheme.onPrimary.withValues(
+                            alpha: 0.3,
+                          ),
+                          highlightColor: colorScheme.onPrimary.withValues(
+                            alpha: 0.1,
+                          ),
+                          onTap: state.isLoading
+                              ? null
+                              : () async {
+                                  HapticFeedback.mediumImpact();
+                                  bool hasError = false;
 
-                                if (state.selectedBudget == null) {
-                                  showBudgetError.value = true;
-                                  hasError = true;
-                                }
-
-                                if (state.selectedGenre == null) {
-                                  showGenreError.value = true;
-                                  hasError = true;
-                                }
-
-                                if (hasError) {
-                                  HapticFeedback.heavyImpact();
-                                  return;
-                                }
-
-                                await viewModel.search();
-                                if (context.mounted) {
-                                  final currentState = ref.read(
-                                    searchViewModelProvider,
-                                  );
-                                  if (currentState.restaurant != null) {
-                                    HapticFeedback.lightImpact();
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ResultScreen(),
-                                      ),
-                                    );
-                                  } else if (currentState.errorMessage !=
-                                      null) {
-                                    HapticFeedback.heavyImpact();
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          currentState.errorMessage!,
-                                        ),
-                                        backgroundColor: colorScheme.error,
-                                      ),
-                                    );
+                                  if (state.selectedBudget == null) {
+                                    showBudgetError.value = true;
+                                    hasError = true;
                                   }
-                                }
-                              },
-                        child: Center(
-                          child: state.isLoading
-                              ? SizedBox(
-                                  width: 28,
-                                  height: 28,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 3,
-                                    color: colorScheme.onPrimary,
-                                  ),
-                                )
-                              : Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.search,
+
+                                  if (state.selectedGenre == null) {
+                                    showGenreError.value = true;
+                                    hasError = true;
+                                  }
+
+                                  if (hasError) {
+                                    HapticFeedback.heavyImpact();
+                                    return;
+                                  }
+
+                                  await viewModel.search();
+                                  if (context.mounted) {
+                                    final currentState = ref.read(
+                                      searchViewModelProvider,
+                                    );
+                                    if (currentState.restaurant != null) {
+                                      HapticFeedback.lightImpact();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ResultScreen(),
+                                        ),
+                                      );
+                                    } else if (currentState.errorMessage !=
+                                        null) {
+                                      HapticFeedback.heavyImpact();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            currentState.errorMessage!,
+                                          ),
+                                          backgroundColor: colorScheme.error,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                          child: Center(
+                            child: state.isLoading
+                                ? SizedBox(
+                                    width: 28,
+                                    height: 28,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
                                       color: colorScheme.onPrimary,
-                                      size: 28,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '今日はここ！',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
+                                  )
+                                : Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.search,
                                         color: colorScheme.onPrimary,
-                                        letterSpacing: 1,
+                                        size: responsive.iconSize,
                                       ),
-                                    ),
-                                  ],
-                                ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        '今日はここ！',
+                                        style: TextStyle(
+                                          fontSize: responsive.scaledFontSize(20),
+                                          fontWeight: FontWeight.bold,
+                                          color: colorScheme.onPrimary,
+                                          letterSpacing: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 24),
-              ]),
+                  const SizedBox(height: 24),
+                ]),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -226,9 +235,11 @@ class HomeScreen extends HookConsumerWidget {
     bool showError = false,
     String? errorMessage,
   }) {
+    final responsive = context.responsive;
+
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(responsive.isSmallScreen ? 16 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -240,20 +251,20 @@ class HomeScreen extends HookConsumerWidget {
                     color: iconColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: iconColor, size: 24),
+                  child: Icon(icon, color: iconColor, size: responsive.iconSize),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: responsive.scaledFontSize(18),
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: responsive.isSmallScreen ? 12 : 16),
             child,
             if (showError && errorMessage != null)
               Semantics(
