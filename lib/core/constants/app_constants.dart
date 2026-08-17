@@ -1,13 +1,15 @@
+import 'package:flutter/foundation.dart';
+
 class AppConstants {
   AppConstants._();
 
   static const String appName = 'Kimeshi';
 
   // API
-  static const String apiBaseUrl = String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:8787',
-  );
+  // デバッグビルド → ローカル、リリースビルド → 本番
+  static const String apiBaseUrl = kDebugMode
+      ? 'http://localhost:8787'
+      : 'https://kimeshi-api.keito3079.workers.dev';
 
   // 検索設定
   static const int defaultRadius = 1000; // メートル
