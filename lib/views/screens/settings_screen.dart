@@ -21,7 +21,12 @@ class SettingsScreen extends StatelessWidget {
           slivers: [
             // 検索設定セクション
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(horizontalPadding, 12, horizontalPadding, 8),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                12,
+                horizontalPadding,
+                8,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Text(
                   '検索設定',
@@ -34,7 +39,12 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 16),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                8,
+                horizontalPadding,
+                16,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Card(
                   child: Column(
@@ -64,7 +74,12 @@ class SettingsScreen extends StatelessWidget {
 
             // アプリ情報セクション
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                8,
+                horizontalPadding,
+                8,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Text(
                   'アプリ情報',
@@ -77,7 +92,12 @@ class SettingsScreen extends StatelessWidget {
               ),
             ),
             SliverPadding(
-              padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 20),
+              padding: EdgeInsets.fromLTRB(
+                horizontalPadding,
+                8,
+                horizontalPadding,
+                20,
+              ),
               sliver: SliverToBoxAdapter(
                 child: Card(
                   child: Column(
@@ -107,9 +127,15 @@ class SettingsScreen extends StatelessWidget {
                         icon: Icons.description_outlined,
                         iconColor: colorScheme.tertiary,
                         title: '利用規約・プライバシーポリシー',
-                        onTap: () {
+                        onTap: () async {
                           HapticFeedback.lightImpact();
-                          // TODO: 利用規約画面へ遷移
+                          final url = Uri.parse(
+                            "https://keito0612.github.io/kimeshi_privacy_policy/",
+                          );
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
                         },
                       ),
                       Divider(
