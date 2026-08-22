@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/responsive.dart';
 import '../../viewmodels/search_viewmodel.dart';
+import '../widgets/banner_ad_widget.dart';
 import '../widgets/budget_selector.dart';
 import '../widgets/genre_selector.dart';
 import '../widgets/radius_slider.dart';
@@ -42,10 +43,13 @@ class HomeScreen extends HookConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('ホーム')),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // メインコンテンツ
-            SliverPadding(
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
+                  // メインコンテンツ
+                  SliverPadding(
               padding: EdgeInsets.fromLTRB(
                 responsive.horizontalPadding,
                 12,
@@ -223,6 +227,11 @@ class HomeScreen extends HookConsumerWidget {
           ],
         ),
       ),
+      // バナー広告
+      const BannerAdWidget(),
+    ],
+  ),
+),
     );
   }
 

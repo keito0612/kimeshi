@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/ad_service.dart';
 import 'viewmodels/providers.dart';
 import 'views/screens/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
+
+  // SharedPreferencesとAdMobを並列で初期化
+  final results = await Future.wait([
+    SharedPreferences.getInstance(),
+    AdService().initialize(),
+  ]);
+
+  final prefs = results[0] as SharedPreferences;
 
   runApp(
     ProviderScope(

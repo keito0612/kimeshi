@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/utils/responsive.dart';
+import '../widgets/banner_ad_widget.dart';
 import 'about_screen.dart';
 import 'default_search_settings_screen.dart';
 
@@ -17,8 +18,11 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('設定')),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+        child: Column(
+          children: [
+            Expanded(
+              child: CustomScrollView(
+                slivers: [
             // 検索設定セクション
             SliverPadding(
               padding: EdgeInsets.fromLTRB(
@@ -169,6 +173,11 @@ class SettingsScreen extends StatelessWidget {
           ],
         ),
       ),
+      // バナー広告
+      const BannerAdWidget(),
+    ],
+  ),
+),
     );
   }
 
